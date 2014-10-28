@@ -26,13 +26,29 @@
 
 ;;from=-2hours&height=20&until=now&width=120&hideGrid=true&hideLegend=true&hideAxes=true&bgcolor=white&fgcolor=black&margin=0&colorList=black
 
-(def params {:from "-2hours"
-             ;; &height=20
-             ;; &until=now
-             ;; &width=120
-             ;; &hideGrid=true&hideLegend=true&hideAxes=true&bgcolor=white&fgcolor=black&margin=0&colorList=black
-})
+(def single-param {:from "-2hours"})
 
-;; (deftest a-test
-;;   (testing "FIXME, I fail."
-;;     (is (= 0 1))))
+;; Use array map to preserve ordering
+(def multiple-params (array-map :from "-2hours"
+                                :height 20
+                                :until "now"))
+
+(def repeated-params (array-map :from "-2hours"
+                                :target ["some.stats.one" "some.stats.two"]))
+
+(deftest build-params-for-key-test
+  (testing ""
+    (is (= (build-params-for-key (first {:target (:target repeated-params)}))
+           ["target=some.stats.one" "target=some.stats.two"]))))
+
+(deftest construct-params-test
+  (testing ""
+    (is (= (build-params {})
+           ""))
+    (is (= (build-params single-param)
+           "?from=-2hours"))
+    (is (= (build-params multiple-params)
+           "?from=-2hours&height=20&until=now"))
+    (is (= (build-params repeated-params)
+           "?from=-2hours&target=some.stats.one&target=some.stats.two"))
+    ))
