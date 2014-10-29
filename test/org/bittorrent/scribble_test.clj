@@ -16,13 +16,17 @@
                   :port 1234})
 
 (deftest host-test
-  (testing ""
-    (is (= (build-host host-map-1)
-           "http://graphite.bittorrent.com/render"))
-    (is (= (build-host host-map-2)
-           "https://user:passwd@graphite.bittorrent.com:1234/render"))
-    (is (thrown? Exception (build-host bad-map-1)))
-    (is (thrown? Exception (build-host {})))
+  (testing "Constructing host portion of URL"
+    (testing "with only host specified"
+      (is (= (build-host host-map-1)
+           "http://graphite.bittorrent.com/render")))
+    (testing "with all options specified"
+      (is (= (build-host host-map-2)
+           "https://user:passwd@graphite.bittorrent.com:1234/render")))
+    (testing "with :passwd but not :user"
+      (is (thrown? Exception (build-host bad-map-1))))
+    (testing "with empty params"
+      (is (thrown? Exception (build-host {}))))
     ))
 
 
@@ -40,26 +44,35 @@
                                  :target ["hitcount(some.stats.one, '1 min')" "hitcount(some.stats.two, '3 hours')"]))
 
 (deftest build-params-for-key-test
-  (testing ""
-    (is (= (build-params-for-key (first {:target (:target repeated-params)}))
-           ["target=some.stats.one" "target=some.stats.two"]))
-    (is (= (build-params-for-key (first {:target (:target encodable-params)}))
+  (testing "Building vector of parameters"
+    (testing "with a single parameter"
+      (is (= (build-params-for-key (first single-param))
+             ["from=-2hours"])))
+    (testing "with multiple targets"
+      (is (= (build-params-for-key (first {:target (:target repeated-params)}))
+           ["target=some.stats.one" "target=some.stats.two"])))
+    (testing "with multiple targets that need URL encoding"
+      (is (= (build-params-for-key (first {:target (:target encodable-params)}))
            ["target=hitcount%28some.stats.one%2C+%271+min%27%29"
-            "target=hitcount%28some.stats.two%2C+%273+hours%27%29"]))))
+            "target=hitcount%28some.stats.two%2C+%273+hours%27%29"])))))
 
 (deftest build-params-test
-  (testing ""
-    (is (= (build-params {})
-           ""))
-    (is (= (build-params single-param)
-           "?from=-2hours"))
-    (is (= (build-params multiple-params)
-           "?from=-2hours&height=20&until=now"))
-    (is (= (build-params repeated-params)
-           "?from=-2hours&target=some.stats.one&target=some.stats.two"))
+  (testing "Building a parameters string"
+    (testing "with no parameters"
+      (is (= (build-params {})
+           "")))
+    (testing "with a single parameter"
+      (is (= (build-params single-param)
+           "?from=-2hours")))
+    (testing "with multiple parameters"
+      (is (= (build-params multiple-params)
+           "?from=-2hours&height=20&until=now")))
+    (testing "with repeated parameters"
+      (is (= (build-params repeated-params)
+           "?from=-2hours&target=some.stats.one&target=some.stats.two")))
     ))
 
 (deftest build-url-test
-  (testing ""
+  (testing "Building a complete URL"
     (is (= (build-url host-map-1 repeated-params)
            "http://graphite.bittorrent.com/render?from=-2hours&target=some.stats.one&target=some.stats.two"))))
