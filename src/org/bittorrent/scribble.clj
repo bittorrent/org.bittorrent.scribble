@@ -40,7 +40,7 @@
 
 (defn build-url [host-params graph-params]
   "Combines host params and graph/target params into a URL that will return a graph image.
-  Requires two dicts, host-params, and graph-params.
+  Requires two maps, host-params, and graph-params.
 
   host-params keys: :host (required), :scheme (defaults to http), :user (optional), :passwd (optional), :port (optional)
   graph-params keys: anything supported by graphite. Values can be a vector to repeat multiple targets."
