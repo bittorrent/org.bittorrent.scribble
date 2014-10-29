@@ -22,7 +22,7 @@
        (:port host-map)
        "/render"))
 
-(defn param-val-to-vector [val]
+(defn ensure-vector [val]
   "Wraps value in vector if not a vector"
   (if (vector? val)
     val
@@ -30,7 +30,7 @@
 
 (defn build-params-for-key [pair]
   "Generates vector full of 'key=value' strings"
-  (map #(str (name (key pair)) "=" (URLEncoder/encode (str %))) (param-val-to-vector (val pair))))
+  (map #(str (name (key pair)) "=" (URLEncoder/encode (str %))) (ensure-vector (val pair))))
 
 (defn build-params [params]
   "Builds entire parameters section of URL"
