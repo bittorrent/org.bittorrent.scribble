@@ -10,9 +10,11 @@ Add this to your `project.clj`'s dependencies:
 
 ## Usage
 
-    (ns my-app (:require [org.bittorrent.scribble :as scribble])) ; Your ns
+    (ns my-app 
+        (:require [org.bittorrent.scribble :as scribble]))
+    
     (scribble/build-url host-params graph-params)
-    => "http://graphite.bittorrent.com/render?from=-2hours&target=some.stats.one&target=some.stats.two"
+    => "http://graphite.whatever.com/render?from=-2hours&target=some.stats.one&target=some.stats.two"
     
 `host-params` should be a map containing the keys: 
     
